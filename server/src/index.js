@@ -173,24 +173,30 @@ const resolveCallbackPayload = (req) => {
 
   const headerToken = extractJwtFromHeaders(req);
   const bodyToken = req.body?.token;
-  const token = headerToken || bodyToken;
+  const candidates = [bodyToken, headerToken].filter(Boolean);
 
-  if (!token) {
+  if (!candidates.length) {
     const err = new Error('OnlyOffice 回调缺少 JWT token');
     err.statusCode = 403;
     throw err;
   }
 
-  try {
-    return jwt.verify(token, ONLYOFFICE_JWT_SECRET, {
-      algorithms: [ONLYOFFICE_JWT_ALG],
-    });
-  } catch (verifyError) {
-    const err = new Error('OnlyOffice JWT 校验失败');
-    err.statusCode = 403;
-    err.cause = verifyError;
-    throw err;
+  let lastError;
+  for (const token of candidates) {
+    try {
+      // Prefer the body token because OnlyOffice signs the full payload there.
+      return jwt.verify(token, ONLYOFFICE_JWT_SECRET, {
+        algorithms: [ONLYOFFICE_JWT_ALG],
+      });
+    } catch (verifyError) {
+      lastError = verifyError;
+    }
   }
+
+  const err = new Error('OnlyOffice JWT 校验失败');
+  err.statusCode = 403;
+  err.cause = lastError;
+  throw err;
 };
 
 app.get('/health', (_req, res) => {
