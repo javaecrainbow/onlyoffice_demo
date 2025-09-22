@@ -29,3 +29,8 @@
 - 开发 时 从 `server/.env.example` 复制 为 `.env`，避免 将 实际 密钥、外网 地址 写入 版本库。
 - 确认 `APP_BASE_URL` 能 被 OnlyOffice Document Server 访问；如 端口 或 域名 调整，需 在 PR 中 标注。
 - 遵循 `server/src/index.js` 中 `SUPPORTED_EXTENSIONS` 限制，新增 类型 前 先 评估 风险，切勿 将 `storage/` 纳入 Git。
+
+## 启动
+ - nvm use 20
+ - 服务端启动 npm start server --workspace server
+ - 前端启动 npm run dev --workspace client

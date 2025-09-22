@@ -2,6 +2,8 @@
 import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 
 const API_BASE = (import.meta.env.VITE_API_BASE || 'http://localhost:4000').replace(/\/$/, '')
+const SUPPORTED_FILE_DESCRIPTION = 'Word、Excel 或 PDF'
+const ACCEPTED_FILE_TYPES = '.doc,.docx,.docm,.odt,.rtf,.xls,.xlsx,.xlsm,.ods,.pdf'
 const files = ref([])
 const isUploading = ref(false)
 const uploadError = ref('')
@@ -288,13 +290,13 @@ onBeforeUnmount(() => {
   <div class="page">
     <header class="page__header">
       <h1>OnlyOffice 在线编辑演示</h1>
-      <p>上传本地 Word 文档，在 OnlyOffice 编辑器中在线编辑并保存回本地。</p>
+      <p>上传本地 {{ SUPPORTED_FILE_DESCRIPTION }} 文档，在 OnlyOffice 编辑器中在线编辑并保存回本地。</p>
     </header>
 
     <section class="upload">
       <label class="upload__button">
-        <input type="file" accept=".doc,.docx,.docm,.odt,.rtf" @change="onUpload" :disabled="isUploading" />
-        <span>{{ isUploading ? '上传中...' : '选择 Word 文件上传' }}</span>
+        <input type="file" :accept="ACCEPTED_FILE_TYPES" @change="onUpload" :disabled="isUploading" />
+        <span>{{ isUploading ? '上传中...' : '选择 ' + SUPPORTED_FILE_DESCRIPTION + ' 文件上传' }}</span>
       </label>
       <p v-if="uploadError" class="upload__error">{{ uploadError }}</p>
     </section>

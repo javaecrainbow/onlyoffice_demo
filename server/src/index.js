@@ -45,7 +45,18 @@ const ONLYOFFICE_JWT_HEADER = (process.env.ONLYOFFICE_JWT_HEADER || 'Authorizati
 
 fs.mkdirSync(STORAGE_DIR, { recursive: true });
 
-const SUPPORTED_EXTENSIONS = new Set(['.docx', '.doc', '.odt', '.rtf', '.docm']);
+const SUPPORTED_EXTENSIONS = new Map([
+  ['.docx', 'word'],
+  ['.doc', 'word'],
+  ['.odt', 'word'],
+  ['.rtf', 'word'],
+  ['.docm', 'word'],
+  ['.xls', 'cell'],
+  ['.xlsx', 'cell'],
+  ['.xlsm', 'cell'],
+  ['.ods', 'cell'],
+  ['.pdf', 'word'],
+]);
 
 const corsOptions = {
   origin: CORS_ORIGINS,
@@ -277,7 +288,14 @@ app.get('/api/editor/:fileId', async (req, res, next) => {
       return;
     }
 
-    const ext = path.extname(fileId).slice(1).toLowerCase();
+    const extWithDot = path.extname(fileId).toLowerCase();
+    if (!SUPPORTED_EXTENSIONS.has(extWithDot)) {
+      res.status(400).json({ message: '不支持的文件类型' });
+      return;
+    }
+
+    const ext = extWithDot.slice(1);
+    const documentType = SUPPORTED_EXTENSIONS.get(extWithDot) || 'word';
     const documentKey = generateDocumentKey(fileId, stats.mtimeMs);
 
     const configCore = {
@@ -292,7 +310,7 @@ app.get('/api/editor/:fileId', async (req, res, next) => {
           print: true,
         },
       },
-      documentType: 'word',
+      documentType,
       editorConfig: {
         mode: 'edit',
         lang: 'zh-CN',
