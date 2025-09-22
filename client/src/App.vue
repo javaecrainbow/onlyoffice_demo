@@ -362,10 +362,15 @@ onBeforeUnmount(() => {
       </header>
       <p v-if="editorStatus" class="editor-panel__status">{{ editorStatus }}</p>
       <div
-        :id="editorContainerId"
-        class="editor-panel__frame"
-        :class="{ 'editor-panel__frame--fullscreen': isFullscreen }"
-      />
+        class="editor-panel__frame-wrapper"
+        :class="{ 'editor-panel__frame-wrapper--fullscreen': isFullscreen }"
+      >
+        <div
+          :id="editorContainerId"
+          class="editor-panel__frame"
+          :class="{ 'editor-panel__frame--fullscreen': isFullscreen }"
+        />
+      </div>
     </section>
   </div>
 </template>
@@ -536,8 +541,9 @@ button:disabled {
   border-radius: 0.75rem;
   padding: 1rem;
   min-height: 0;
-  max-height: calc(100vh - 120px);
-  overflow: auto;
+  max-height: calc(100vh - 160px);
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .editor-panel__header {
@@ -558,13 +564,23 @@ button:disabled {
   font-weight: 500;
 }
 
-.editor-panel__frame {
-  flex: 1;
-  min-height: 880px;
-  height: calc(100vh - 200px);
+.editor-panel__frame-wrapper {
+  flex: none;
+  min-height: 560px;
+  height: 65vh;
+  max-height: 640px;
   border: 1px solid #e2e8f0;
   border-radius: 0.5rem;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: #f8fafc;
+}
+
+.editor-panel__frame {
+  width: 100%;
+  height: 100%;
+  border-radius: 0.5rem;
+  background: #fff;
 }
 
 .editor-panel--fullscreen {
@@ -576,9 +592,21 @@ button:disabled {
   overflow: hidden;
 }
 
-.editor-panel__frame--fullscreen {
+.editor-panel__frame-wrapper--fullscreen {
+  flex: 1;
   min-height: 0;
   height: calc(100vh - 140px);
+  max-height: none;
+  border-radius: 0;
+  border: none;
+  overflow: hidden;
+  background: #fff;
+}
+
+.editor-panel__frame--fullscreen {
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
 }
 
 @media (max-width: 768px) {
@@ -586,9 +614,10 @@ button:disabled {
     padding: 1.5rem;
   }
 
-  .editor-panel__frame {
-    min-height: 600px;
-    height: calc(100vh - 220px);
+  .editor-panel__frame-wrapper {
+    min-height: 420px;
+    height: 65vh;
+    max-height: 640px;
   }
 }
 </style>

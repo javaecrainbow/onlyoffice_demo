@@ -16,8 +16,25 @@ const PORT = Number(process.env.PORT) || 4000;
 const STORAGE_DIR = path.resolve(
   process.env.STORAGE_DIR || path.join(__dirname, '../storage')
 );
-const APP_BASE_URL = (process.env.APP_BASE_URL || `http://localhost:${PORT}`).replace(/\/$/, '');
-const ONLYOFFICE_BASE_URL = (process.env.ONLYOFFICE_BASE_URL || 'http://localhost:8080').replace(/\/$/, '');
+
+const normalizeBaseUrl = (value, fallback = '') => {
+  const source = value || fallback;
+  if (!source) {
+    return '';
+  }
+  return source.replace(/\/$/, '');
+};
+
+const DEFAULT_APP_BASE_URL = `http://localhost:${PORT}`;
+const APP_BASE_URL = normalizeBaseUrl(process.env.APP_BASE_URL, DEFAULT_APP_BASE_URL);
+const ONLYOFFICE_APP_BASE_URL = normalizeBaseUrl(
+  process.env.ONLYOFFICE_APP_BASE_URL,
+  APP_BASE_URL
+);
+const ONLYOFFICE_BASE_URL = normalizeBaseUrl(
+  process.env.ONLYOFFICE_BASE_URL,
+  'http://localhost:8080'
+);
 const CORS_ORIGINS = (process.env.CORS_ORIGINS || 'http://localhost:5173')
   .split(',')
   .map((origin) => origin.trim())
@@ -268,7 +285,7 @@ app.get('/api/editor/:fileId', async (req, res, next) => {
         fileType: ext,
         key: documentKey,
         title: fileId,
-        url: `${APP_BASE_URL}/files/${encodeURIComponent(fileId)}`,
+        url: `${ONLYOFFICE_APP_BASE_URL}/files/${encodeURIComponent(fileId)}`,
         permissions: {
           edit: true,
           download: true,
@@ -279,9 +296,10 @@ app.get('/api/editor/:fileId', async (req, res, next) => {
       editorConfig: {
         mode: 'edit',
         lang: 'zh-CN',
-        callbackUrl: `${APP_BASE_URL}/api/onlyoffice/callback/${encodeURIComponent(fileId)}`,
+        callbackUrl: `${ONLYOFFICE_APP_BASE_URL}/api/onlyoffice/callback/${encodeURIComponent(fileId)}`,
         customization: {
           autosave: true,
+          spellcheck: false,
         },
       },
       height: '100%',
@@ -338,6 +356,6 @@ app.use((err, _req, res, _next) => {
   res.status(statusCode).json({ message: err.message || '服务器错误' });
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server listening on ${PORT}`);
 });

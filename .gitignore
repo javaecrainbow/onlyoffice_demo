@@ -28,6 +28,7 @@ pids/
 # Editor directories and files
 .idea/
 .vscode/
+.history/
 *.swp
 .DS_Store
 

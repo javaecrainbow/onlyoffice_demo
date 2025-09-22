@@ -13,7 +13,8 @@
 2. 本地安装 Node.js（建议 18+）。部分依赖针对 Node 20 会有警告，但功能不受影响。
 3. 根据实际情况调整后端环境变量（参考 `server/.env.example`）。常用项：
    - `ONLYOFFICE_BASE_URL`：OnlyOffice Document Server 的基础地址，例如 `http://192.168.68.3:32780`。
-   - `APP_BASE_URL`：后端对外可访问的地址（OnlyOffice 需要通过该地址访问文件和回调接口），**务必填写 Document Server 可以直接访问的 IP/域名，不要使用 localhost**。
+   - `APP_BASE_URL`：浏览器访问后端与静态文件的地址，例如 `http://192.168.99.102:4000`。
+   - `ONLYOFFICE_APP_BASE_URL`：OnlyOffice Document Server 访问后端接口与文件的地址，默认与 `APP_BASE_URL` 相同；如果 Document Server 所在网络使用不同的主机地址（如容器桥接 IP），请设置为该地址，例如 `http://192.168.68.1:4000`。
    - `PORT`：后端监听端口，默认 `4000`。
    - `ONLYOFFICE_JWT_SECRET`：OnlyOffice Document Server 配置的 JWT 密钥（示例中已填入 `YH5OgoM4bCDW54FCV9ayHPlVZHSN8Dlp`）。
    - `ONLYOFFICE_JWT_ALG`：JWT 算法，默认 `HS256`。
